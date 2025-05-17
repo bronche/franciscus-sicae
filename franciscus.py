@@ -63,6 +63,23 @@ client = OpenAI(
             st.info("Aucun historique enregistré pour l'instant.")
 
 
+
+# 📂 Sélection de questions précédentes par thème
+try:
+    historique_df = pd.read_csv("historique_questions.csv", names=["datetime", "sujet", "question"], encoding="utf-8")
+    historique_df.drop_duplicates(subset=["question"], inplace=True)
+    options_client = [f"Client : {q}" for q in historique_df[historique_df["sujet"] == "client"]["question"].tolist()]
+    options_gaz = [f"Gaz : {q}" for q in historique_df[historique_df["sujet"] == "gaz"]["question"].tolist()]
+    options_combinees = [""] + options_client + options_gaz
+
+    with st.expander("📂 Questions précédentes (sélectionnable par thème)"):
+        selection = st.selectbox("📜 Choisir une question à réutiliser :", options_combinees)
+        if selection and ": " in selection:
+            st.session_state.question_predefinie = selection.split(": ", 1)[1]
+except FileNotFoundError:
+    st.info("Aucun historique enregistré pour l'instant.")
+
+
 connaissances_client = charger_texte("base_connaissances.txt")
 index_gaz = charger_index_gaz()
 

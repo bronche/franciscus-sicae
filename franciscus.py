@@ -1,11 +1,15 @@
+
 import streamlit as st
 from openai import OpenAI
 import os
 
-# Configuration de la page Streamlit
+# Configuration de la page
 st.set_page_config(page_title="Franciscus - Assistant SICAE", page_icon="⚡")
 
-# Affichage d'accueil
+# Chargement de l'image de Franciscus
+st.image("https://www.sicaesomme.fr/assets/custom/img/logo.png", width=200)
+
+# Titre et présentation
 st.markdown("""
 # 🤖 Franciscus
 Bienvenue ! Je suis **Franciscus**, l'assistant virtuel de la SICAE de la Somme et du Cambraisis.
@@ -18,13 +22,13 @@ Posez-moi une question sur :
 - Les Conditions Générales de Vente
 """)
 
-# Initialisation du client OpenRouter (compatible OpenAI)
+# Initialisation du client OpenRouter
 client = OpenAI(
     base_url="https://openrouter.ai/api/v1",
     api_key=os.getenv("OPENROUTER_API_KEY")
 )
 
-# Chargement de la base de connaissances
+# Chargement des connaissances
 try:
     with open("base_connaissances.txt", "r", encoding="utf-8") as f:
         connaissances = f.read()
@@ -32,10 +36,26 @@ except FileNotFoundError:
     st.error("⚠️ Fichier base_connaissances.txt introuvable.")
     connaissances = ""
 
-# Champ de saisie utilisateur
+# Initialisation de l'historique
+if "historique" not in st.session_state:
+    st.session_state.historique = []
+
+# Réinitialisation
+if st.button("🔄 Réinitialiser l'historique"):
+    st.session_state.historique = []
+
+# Affichage de l'historique
+with st.expander("📜 Historique des questions posées"):
+    if st.session_state.historique:
+        for i, q in enumerate(st.session_state.historique, 1):
+            st.markdown(f"**{i}.** {q}")
+    else:
+        st.info("Aucune question posée pour le moment.")
+
+# Champ de question
 question = st.text_input("❓ Posez votre question ici :")
 
-# Génération de la réponse
+# Traitement
 if question:
     with st.spinner("Franciscus rédige sa réponse..."):
         try:
@@ -54,6 +74,8 @@ if question:
                 temperature=0.4,
                 max_tokens=500
             )
-            st.success(response.choices[0].message.content)
+            reponse_text = response.choices[0].message.content
+            st.session_state.historique.append(question)
+            st.success(reponse_text)
         except Exception as e:
             st.error(f"Erreur lors de l'appel à l'API : {e}")

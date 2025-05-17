@@ -73,8 +73,11 @@ if question:
                 temperature=0.4,
                 max_tokens=600
             )
-            reponse_text = response.choices[0].message.content
-            st.session_state.historique.append(question)
-            st.success(reponse_text)
+            if response and hasattr(response, "choices") and response.choices and hasattr(response.choices[0], "message"):
+                reponse_text = response.choices[0].message.content
+                st.session_state.historique.append(question)
+                st.success(reponse_text)
+            else:
+                st.error("❌ Réponse vide ou invalide de l'IA.")
         except Exception as e:
             st.error(f"Erreur lors de l'appel à l'API : {e}")

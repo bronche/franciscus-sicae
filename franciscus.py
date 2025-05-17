@@ -1,9 +1,8 @@
-
 import streamlit as st
-import openai
+from openai import OpenAI
 import os
 
-# Configuration du projet
+# Configuration de la page Streamlit
 st.set_page_config(page_title="Franciscus - Assistant SICAE", page_icon="⚡")
 
 st.markdown("""
@@ -16,35 +15,34 @@ Posez-moi une question sur :
 - Les services aux collectivités ou aux pros
 - Le raccordement ou les coupures
 - Les Conditions Générales de Vente
-
 """)
 
-# Récupération de la clé API depuis les secrets Streamlit
-openai.api_key = os.getenv("OPENAI_API_KEY")
-
-# Nouvelle configuration de client pour OpenAI v1.x
-client = openai.OpenAI()
+# Initialisation du client OpenAI
+client = OpenAI(api_key=os.getenv("OPENAI_API_KEY"))
 
 # Chargement de la base de connaissances
 with open("base_connaissances.txt", "r", encoding="utf-8") as f:
     connaissances = f.read()
 
-# Interface utilisateur
+# Champ de saisie de la question utilisateur
 question = st.text_input("❓ Votre question ici :")
 
+# Traitement de la question
 if question:
     with st.spinner("Franciscus rédige sa réponse..."):
         try:
             response = client.chat.completions.create(
                 model="gpt-3.5-turbo",
                 messages=[
-                    {"role": "system", "content": f"Tu es Franciscus, un assistant client pour la SICAE. Tu réponds de façon claire, concise et conviviale en t'appuyant sur ces données : {connaissances}"},
+                    {
+                        "role": "system",
+                        "content": f"Tu es Franciscus, un assistant client pour la SICAE. Tu réponds de façon claire, concise et conviviale en t'appuyant sur ces données : {connaissances}"
+                    },
                     {"role": "user", "content": question}
                 ],
                 temperature=0.4,
                 max_tokens=500
             )
-            reponse_text = response.choices[0].message.content
-            st.success(reponse_text)
+            st.success(response.choices[0].message.content)
         except Exception as e:
             st.error(f"Erreur lors de l'appel à l'API : {e}")

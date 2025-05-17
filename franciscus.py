@@ -115,31 +115,35 @@ if p and o:
             - Heures Pleines : 0,7518 €/kWh  
             - Heures Creuses : 0,1379 €/kWh
             """)
+# Génération du PDF
+if st.button("📄 Télécharger un résumé PDF de ma sélection"):
+    pdf = FPDF()
+    pdf.add_page()
+    pdf.set_font("Arial", size=12)
+    pdf.cell(200, 10, txt="Résumé tarifaire personnalisé - SICAE", ln=1, align="C")
+    pdf.ln(10)
+    pdf.cell(200, 10, txt=f"Puissance souscrite : {p} kVA", ln=1)
+    pdf.cell(200, 10, txt=f"Option tarifaire : {o}", ln=1)
+    pdf.cell(200, 10, txt=f"Abonnement annuel : {tarifs[o][p]} HT/an", ln=1)
+    pdf.ln(5)
 
-    # Génération du PDF
-    if st.button("📄 Télécharger un résumé PDF de ma sélection"):
-        pdf = FPDF()
-        pdf.add_page()
-        pdf.set_font("Arial", size=12)
-        pdf.cell(200, 10, txt="Résumé tarifaire personnalisé - SICAE", ln=1, align="C")
-        pdf.ln(10)
-        pdf.cell(200, 10, txt=f"Puissance souscrite : {p} kVA", ln=1)
-        pdf.cell(200, 10, txt=f"Option tarifaire : {o}", ln=1)
-        pdf.cell(200, 10, txt=f"Abonnement annuel : {tarifs[o][p]} HT/an", ln=1)
-        pdf.ln(5)
+    if o == "Base":
+        pdf.multi_cell(0, 10, "Prix unique de l'énergie : 0,2276 €/kWh HT")
+    elif o == "Heures Pleines / Heures Creuses":
+        pdf.multi_cell(0, 10, "Heures Pleines : 0,2516 €/kWh HT\nHeures Creuses : 0,1828 €/kWh HT")
+    elif o == "Tempo":
+        pdf.multi_cell(0, 10, """Tempo :
+- Jours Bleus : HP 0,1618 €/kWh, HC 0,1334 €/kWh
+- Jours Blancs : HP 0,2002 €/kWh, HC 0,1498 €/kWh
+- Jours Rouges : HP 0,7518 €/kWh, HC 0,1379 €/kWh""")
 
-        if o == "Base":
-            pdf.multi_cell(0, 10, "Prix unique de l'énergie : 0,2276 €/kWh HT")
-        elif o == "Heures Pleines / Heures Creuses":
-            pdf.multi_cell(0, 10, "HP : 0,2516 €/kWh HT, HC : 0,1828 €/kWh HT")
-        elif o == "Tempo":
-            pdf.multi_cell(0, 10, "Tempo :
-"
-                                  "- Bleus : HP 0,1618 € / HC 0,1334 €
-"
-                                  "- Blancs : HP 0,2002 € / HC 0,1498 €
-"
-                                  "- Rouges : HP 0,7518 € / HC 0,1379 €")
-        pdf_output = BytesIO()
-        pdf.output(pdf_output)
-        st.download_button("📥 Télécharger le PDF", data=pdf_output.getvalue(), file_name="tarif_sicae.pdf", mime="application/pdf")
+    # (facultatif) Ajouter une signature
+    pdf.ln(10)
+    pdf.set_font("Arial", style="I", size=11)
+    pdf.cell(200, 10, txt="Franciscus – Assistant virtuel de la SICAE", ln=1, align="L")
+
+    pdf_output = BytesIO()
+    pdf.output(pdf_output)
+    st.download_button("📥 Télécharger le PDF", data=pdf_output.getvalue(), file_name="tarif_sicae.pdf", mime="application/pdf")
+
+   

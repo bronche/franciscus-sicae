@@ -12,7 +12,8 @@ st.image("logo-sicae.png", width=200)
 st.markdown("""
 # 🤖 Franciscus
 Bienvenue ! Je suis **Franciscus**, l'assistant virtuel de la SICAE de la Somme et du Cambraisis.
-Posez-moi vos questions :
+Je réponds à vos questions en recherchant, à votre place, les informations sur notre site.
+Je peux vous renseinger sur un grand nombre de sujets :
 - Souscription / Résiliation
 - Facture ou Paiement
 - Coupures, travaux, raccordement

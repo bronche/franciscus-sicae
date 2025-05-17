@@ -1,32 +1,94 @@
 
-### Souscription / Résiliation
-- Le contrat peut être souscrit en ligne via un bulletin.
-- Droit de rétractation : 14 jours.
-- Résiliation possible à tout moment, sans frais, par écrit.
+### ⚡ Souscription d’un contrat
+- Vous pouvez souscrire un contrat d’électricité ou de gaz directement depuis notre site.
+- Il vous faudra : une pièce d’identité, un RIB et l’adresse exacte du logement.
+- La mise en service est effective sous 5 jours ouvrés (48h en urgence avec surcoût).
+- Un agent peut intervenir sur place si le site est inaccessible à distance.
 
-### Facturation
-- Facture annuelle basée sur la consommation réelle.
-- Factures intermédiaires possibles.
-- Moyens de paiement : CB, chèque, prélèvement, chèque énergie.
+### 📦 Types d’offres disponibles
+- Tarif Bleu Réglementé (≤ 36 kVA)
+- Offre verte (électricité d’origine renouvelable)
+- Offre Entreprises (> 36 kVA) sur devis
+- Options : heures creuses/heures pleines, option base
 
-### Impayés
-- Relance à 15 jours, réduction ou suspension possible.
-- Clients précaires : aides FSL, protections, etc.
+### 💸 Moyens de paiement
+- Prélèvement automatique, carte bancaire, chèque, TIP, espèces (via partenaire)
+- Paiement en ligne via l’espace client sécurisé
+- Paiement fractionné possible sur demande
 
-### Tarifs
-- Libre choix du tarif.
-- Composants : abonnement + kWh.
-- Baisse de puissance possible 1x/an.
+### 📃 Factures
+- Factures tous les 2 mois en consommation réelle ou estimée
+- Téléchargement PDF disponible dans l’espace client
+- Historique sur 2 ans consultable
 
-### Services professionnels / collectivités
-- Raccordement, éclairage public, énergie sur mesure.
-- Suivi des travaux et incidents réseau en ligne.
+### 🧾 Chèque énergie
+- Accepté sans frais
+- À transmettre par courrier ou à enregistrer sur le portail en ligne
+- Compatible avec toutes les offres
 
-### Entreprise SICAE
-- Fournisseur d'électricité dans 185 communes.
-- Créée en 1912. Plusieurs accueils clients.
+### 🛠 Raccordement & travaux
+- Raccordement neuf, renforcement ou extension du réseau
+- Délais variables selon autorisations (1 à 12 semaines)
+- Travaux réalisés par les techniciens SICAE ou des entreprises partenaires
+- Suivi de dossier en ligne et notification par email
 
-### Contact
-- Agences à Péronne, Hangest, Escaudœuvres.
-- Formulaire de contact sur le site.
+### 🌍 Autoconsommation / Photovoltaïque
+- La SICAE accompagne les projets de production solaire
+- Étude de faisabilité, devis, aide au montage du dossier Consuel
+- Possibilité d'injection totale ou partielle
+- Prime à l’autoconsommation selon la CRE
+
+### 💡 Éclairage public
+- Gestion de l’éclairage pour 185 communes
+- Réalisation des diagnostics, rénovation LED, pilotage intelligent
+- Maintenance programmée ou curative
+
+### 🧰 Dépannage
+- Urgences 24h/24 au 09 72 67 50 80
+- Interventions sous 2h pour cas critiques (sécurité)
+- Dépannage sur site ou à distance
+
+### 🧑‍💼 Services aux professionnels
+- Suivi des consommations par bâtiment
+- Alertes en cas de dépassement de puissance
+- Conseils en économies d’énergie
+- Offres sur mesure pour bailleurs, agriculteurs, artisans
+
+### 🏛 Services aux collectivités
+- Audit énergétique des bâtiments communaux
+- Suivi budgétaire et comptabilité analytique de l’énergie
+- Accompagnement aux subventions (Certificats d’Économies d’Énergie)
+
+### 🧑‍🤝‍🧑 Aide aux clients fragiles
+- Information proactive sur le chèque énergie
+- Signalement aux services sociaux avec accord du client
+- Suspension des coupures hivernales (trêve hivernale du 1er nov. au 31 mars)
+
+### 🔐 Sécurité
+- Toutes les interventions sont effectuées par du personnel habilité
+- Le respect des normes NFC15-100 et RGIE est garanti
+- Tests d’isolement et contrôles de tension effectués systématiquement
+
+### 📞 Contact et assistance
+- Agences : Péronne (03 22 XX XX XX), Hangest-en-Santerre, Escaudœuvres
+- Formulaire de contact en ligne disponible 24/7
+- Accueil physique sur RDV
+
+### 🔢 Données personnelles et RGPD
+- Finalités : facturation, relation client, sécurité
+- DPO : donneespersonnelles@sicaesomme.fr
+- Droit d’accès, de rectification et d’opposition garanti
+
+### 🔎 Questions fréquentes
+- Q : Quand recevrai-je ma première facture ?
+  R : Environ 6 à 8 semaines après la mise en service.
+
+- Q : Comment connaître mes heures creuses ?
+  R : Elles figurent sur votre contrat et votre facture, ou sur demande.
+
+- Q : Puis-je changer d’offre en cours d’année ?
+  R : Oui, une fois par an sans frais.
+
+- Q : Est-ce que la SICAE fournit aussi du gaz ?
+  R : Oui, selon les communes, en partenariat avec des distributeurs locaux.
 

@@ -15,7 +15,8 @@ st.image("logo-sicae.png", width=200)
 st.markdown("""
 # 🤖 Franciscus
 Bienvenue ! Je suis **Franciscus**, l'assistant IA de la SICAE.
-Posez-moi vos questions :
+J'ai lu tout le contenu de votre site Web et toute vos procédures gaz.
+Posez-moi vos questions et testez moi !
 - 📱 Clientèle (abonnement, facture…)
 - 🔧 Technique Gaz (procédures, consignation…)
 """)

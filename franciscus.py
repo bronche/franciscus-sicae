@@ -11,14 +11,10 @@ st.image("logo-sicae.png", width=200)
 
 st.markdown("""
 # 🤖 Franciscus
-Bienvenue ! Je suis **Franciscus**, l'assistant virtuel de la SICAE de la Somme et du Cambraisis.
-Je réponds à vos questions en recherchant, à votre place, les informations sur notre site.
-Je peux vous renseigner sur un grand nombre de sujets :
-- Souscription / Résiliation
-- Facture ou Paiement
-- Coupures, travaux, raccordement
-- Conditions Générales de Vente
-et bien plus encore !
+Bienvenue ! Je suis **Franciscus**, l'assistant virtuel de la SICAE.
+Posez-moi vos questions :
+- 📱 Clientèle (abonnement, facture, horaires…)
+- 🔧 Technique Gaz (intervention, sécurité, branchement…)
 """)
 
 # Initialisation OpenRouter
@@ -27,20 +23,26 @@ client = OpenAI(
     api_key=os.getenv("OPENROUTER_API_KEY")
 )
 
-# Chargement base de connaissances
-def charger_connaissances():
+# Chargement des deux bases de connaissance
+def charger_texte(fichier):
     try:
-        with open("base_connaissances.txt", "r", encoding="utf-8") as f:
+        with open(fichier, "r", encoding="utf-8") as f:
             return f.read()
     except FileNotFoundError:
-        st.error("⚠️ base_connaissances.txt introuvable.")
         return ""
 
-connaissances = charger_connaissances()
+connaissances_client = charger_texte("base_connaissances.txt")
+connaissances_gaz = charger_texte("base_connaissances_gaz.txt")
 
-# Franciscus - Assistant IA
-st.subheader("💬 Posez votre question à Franciscus")
+# Fonction de routage selon mots-clés
+def identifier_sujet(question):
+    mots_cles_gaz = ["gaz", "branchement", "intervention", "consignation", "fuite", "réseau", "détendeur", "odorisation", "canalisation", "compteur gaz"]
+    question_lower = question.lower()
+    if any(mot in question_lower for mot in mots_cles_gaz):
+        return "gaz"
+    return "client"
 
+# Historique
 if "historique" not in st.session_state:
     st.session_state.historique = []
 
@@ -49,103 +51,31 @@ if st.button("🔄 Réinitialiser l'historique"):
 
 with st.expander("📜 Historique des questions posées"):
     if st.session_state.historique:
-        for index, question_hist in enumerate(st.session_state.historique, 1):
-            st.markdown(f"**{index}.** {question_hist}")
+        for index, q in enumerate(st.session_state.historique, 1):
+            st.markdown(f"**{index}.** {q}")
     else:
         st.info("Aucune question posée pour le moment.")
 
+# Zone de question
 question = st.text_input("❓ Posez votre question ici :")
 
 if question:
-    with st.spinner("Franciscus rédige sa réponse..."):
+    sujet = identifier_sujet(question)
+    base = connaissances_gaz if sujet == "gaz" else connaissances_client
+
+    with st.spinner(f"Franciscus recherche dans la base {'gaz' if sujet == 'gaz' else 'clientèle'}..."):
         try:
             response = client.chat.completions.create(
                 model="openai/gpt-3.5-turbo",
                 messages=[
-                    {"role": "system", "content": f"Tu es Franciscus, un assistant client pour la SICAE. Tu réponds de manière claire, concise et accessible en t'appuyant sur les informations suivantes : {connaissances}"},
+                    {"role": "system", "content": f"Tu es Franciscus, un assistant IA pour la SICAE. Tu réponds aux questions liées à la {'partie Gaz technique' if sujet == 'gaz' else 'relation clientèle'} en t’appuyant sur les documents suivants : {base}"},
                     {"role": "user", "content": question}
                 ],
                 temperature=0.4,
-                max_tokens=500
+                max_tokens=600
             )
             reponse_text = response.choices[0].message.content
             st.session_state.historique.append(question)
             st.success(reponse_text)
         except Exception as e:
             st.error(f"Erreur lors de l'appel à l'API : {e}")
-
-# Séparation
-st.markdown("---")
-st.markdown("## 💰 Assistant tarifaire personnalisé")
-
-# Assistant tarifaire
-puissances = ["3", "6", "9", "12", "15", "18", "24", "30", "36"]
-options = ["Base", "Heures Pleines / Heures Creuses", "Tempo"]
-
-tarifs = {
-    "Base": {"3": "103,20 €", "6": "134,16 €", "9": "167,88 €", "12": "202,08 €", "15": "233,76 €", "18": "263,52 €", "24": "319,08 €", "30": "373,32 €", "36": "426,24 €"},
-    "Heures Pleines / Heures Creuses": {"3": "137,76 €", "6": "172,80 €", "9": "206,76 €", "12": "238,44 €", "15": "270,12 €", "18": "303,60 €", "24": "365,28 €", "30": "420,84 €", "36": "477,00 €"},
-    "Tempo": {"3": "169,92 €", "6": "203,28 €", "9": "233,76 €", "12": "264,36 €", "15": "297,72 €", "18": "329,40 €", "24": "390,00 €", "30": "444,24 €", "36": "502,80 €"}
-}
-
-col1, col2 = st.columns(2)
-with col1:
-    p = st.selectbox("Puissance souscrite (kVA)", puissances, index=1)
-with col2:
-    o = st.selectbox("Option tarifaire", options)
-
-if p and o:
-    st.success(f"💡 Abonnement annuel pour {p} kVA en option {o} : **{tarifs[o][p]} HT/an**")
-
-    # Affichage des prix du kWh
-    if o == "Base":
-        st.info("💡 **Option Base** : Prix unique de l'énergie : **0,2276 €/kWh** HT")
-    elif o == "Heures Pleines / Heures Creuses":
-        st.info("💡 **Option HP/HC** : Heures Pleines : **0,2516 €/kWh** HT – Heures Creuses : **0,1828 €/kWh** HT")
-    elif o == "Tempo":
-        with st.expander("🔎 Détail des prix Tempo (jours bleus, blancs, rouges)"):
-            st.markdown("""
-            **Jours Bleus**  
-            - Heures Pleines : 0,1618 €/kWh  
-            - Heures Creuses : 0,1334 €/kWh
-
-            **Jours Blancs**  
-            - Heures Pleines : 0,2002 €/kWh  
-            - Heures Creuses : 0,1498 €/kWh
-
-            **Jours Rouges**  
-            - Heures Pleines : 0,7518 €/kWh  
-            - Heures Creuses : 0,1379 €/kWh
-            """)
-# Génération du PDF
-if st.button("📄 Télécharger un résumé PDF de ma sélection"):
-    pdf = FPDF()
-    pdf.add_page()
-    pdf.set_font("Arial", size=12)
-    pdf.cell(200, 10, txt="Résumé tarifaire personnalisé - SICAE", ln=1, align="C")
-    pdf.ln(10)
-    pdf.cell(200, 10, txt=f"Puissance souscrite : {p} kVA", ln=1)
-    pdf.cell(200, 10, txt=f"Option tarifaire : {o}", ln=1)
-    pdf.cell(200, 10, txt=f"Abonnement annuel : {tarifs[o][p]} HT/an", ln=1)
-    pdf.ln(5)
-
-    if o == "Base":
-        pdf.multi_cell(0, 10, "Prix unique de l'énergie : 0,2276 €/kWh HT")
-    elif o == "Heures Pleines / Heures Creuses":
-        pdf.multi_cell(0, 10, "Heures Pleines : 0,2516 €/kWh HT\nHeures Creuses : 0,1828 €/kWh HT")
-    elif o == "Tempo":
-        pdf.multi_cell(0, 10, """Tempo :
-- Jours Bleus : HP 0,1618 €/kWh, HC 0,1334 €/kWh
-- Jours Blancs : HP 0,2002 €/kWh, HC 0,1498 €/kWh
-- Jours Rouges : HP 0,7518 €/kWh, HC 0,1379 €/kWh""")
-
-    # (facultatif) Ajouter une signature
-    pdf.ln(10)
-    pdf.set_font("Arial", style="I", size=11)
-    pdf.cell(200, 10, txt="Franciscus – Assistant virtuel de la SICAE", ln=1, align="L")
-
-    pdf_output = BytesIO()
-    pdf.output(pdf_output)
-    st.download_button("📥 Télécharger le PDF", data=pdf_output.getvalue(), file_name="tarif_sicae.pdf", mime="application/pdf")
-
-   

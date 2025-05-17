@@ -14,21 +14,21 @@ def charger_texte(fichier):
     except FileNotFoundError:
         return ""
 
-# Chargement de l'index Gaz découpé
+# Chargement index gaz affiné
 def charger_index_gaz():
     try:
-        with open("index_gaz.json", "r", encoding="utf-8") as f:
+        with open("index_gaz_affine.json", "r", encoding="utf-8") as f:
             return json.load(f)
     except:
         return []
 
-def rechercher_blocs(question, index, top_n=3):
+def rechercher_blocs(question, index, top_n=4):
     docs = [bloc['contenu'] for bloc in index]
     titres = [bloc['titre'] for bloc in index]
     vect = TfidfVectorizer().fit_transform([question] + docs)
     cos_sim = cosine_similarity(vect[0:1], vect[1:]).flatten()
     indices = cos_sim.argsort()[-top_n:][::-1]
-    return [f"### {titres[i]}\n{docs[i]}" for i in indices]
+    return [{"titre": titres[i], "contenu": docs[i]} for i in indices]
 
 # Interface
 st.set_page_config(page_title="Franciscus - SICAE", page_icon="⚡")
@@ -36,10 +36,10 @@ st.image("logo-sicae.png", width=200)
 
 st.markdown("""
 # 🤖 Franciscus
-Bienvenue ! Je suis **Franciscus**, l'assistant virtuel de la SICAE.
+Bienvenue ! Je suis **Franciscus**, l'assistant IA de la SICAE.
 Posez-moi vos questions :
-- 📱 Clientèle (abonnement, facture, horaires…)
-- 🔧 Technique Gaz (intervention, sécurité, branchement…)
+- 📱 Clientèle (abonnement, facture…)
+- 🔧 Technique Gaz (procédures, consignation…)
 """)
 
 client = OpenAI(
@@ -50,13 +50,18 @@ client = OpenAI(
 connaissances_client = charger_texte("base_connaissances.txt")
 index_gaz = charger_index_gaz()
 
+# Sélection manuelle ou automatique de la base
+use_force_gaz = st.checkbox("🔧 Forcer la base technique Gaz")
+question = st.text_input("❓ Posez votre question ici :")
+
 def identifier_sujet(question):
-    mots_cles_gaz = ["gaz", "branchement", "intervention", "consignation", "fuite", "réseau", "détendeur", "odorisation", "canalisation", "compteur", "piquage"]
+    mots_cles_gaz = ["gaz", "branchement", "intervention", "consignation", "fuite", "réseau", "détendeur", "odorisation", "canalisation", "piquage", "poste", "HTA", "compteur"]
     question_lower = question.lower()
     if any(mot in question_lower for mot in mots_cles_gaz):
         return "gaz"
     return "client"
 
+# Historique
 if "historique" not in st.session_state:
     st.session_state.historique = []
 
@@ -70,12 +75,16 @@ with st.expander("📜 Historique des questions posées"):
     else:
         st.info("Aucune question posée pour le moment.")
 
-question = st.text_input("❓ Posez votre question ici :")
-
+# Traitement de la question
 if question:
-    sujet = identifier_sujet(question)
+    sujet = "gaz" if use_force_gaz else identifier_sujet(question)
+
     if sujet == "gaz":
-        context = "\n\n".join(rechercher_blocs(question, index_gaz, top_n=4))
+        blocs = rechercher_blocs(question, index_gaz)
+        context = "\n\n".join([f"### {b['titre']}\n{b['contenu']}" for b in blocs])
+        with st.expander("🔍 Blocs utilisés (base Gaz)"):
+            for b in blocs:
+                st.markdown(f"**{b['titre']}**\n{b['contenu']}")
     else:
         context = connaissances_client
 
@@ -84,14 +93,15 @@ if question:
             response = client.chat.completions.create(
                 model="openai/gpt-3.5-turbo",
                 messages=[
-                    {"role": "system", "content": f"Tu es Franciscus, un assistant SICAE. Voici les données :\n{context}"},
+                    {"role": "system", "content": f"Tu es Franciscus, assistant IA de la SICAE. Voici les documents à disposition :\n{context}"},
                     {"role": "user", "content": question}
                 ],
                 temperature=0.4,
-                max_tokens=600
+                max_tokens=700
             )
             if response and hasattr(response, "choices") and response.choices:
-                st.success(response.choices[0].message.content)
+                reponse_text = response.choices[0].message.content
+                st.success(reponse_text)
                 st.session_state.historique.append(question)
             else:
                 st.error("❌ Réponse vide ou invalide.")

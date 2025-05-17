@@ -2,49 +2,94 @@
 import streamlit as st
 from openai import OpenAI
 import os
+from PyPDF2 import PdfReader
 
-# Configuration de la page
+# Configuration
 st.set_page_config(page_title="Franciscus - Assistant SICAE", page_icon="⚡")
-
-# Chargement de l'image de Franciscus
 st.image("https://www.sicaesomme.fr/assets/custom/img/logo.png", width=200)
 
-# Titre et présentation
 st.markdown("""
 # 🤖 Franciscus
 Bienvenue ! Je suis **Franciscus**, l'assistant virtuel de la SICAE de la Somme et du Cambraisis.
-
-Posez-moi une question sur :
-- La souscription ou la résiliation
-- Votre facture ou le paiement
-- Les services aux collectivités ou aux pros
-- Le raccordement ou les coupures
-- Les Conditions Générales de Vente
 """)
 
-# Initialisation du client OpenRouter
+# Initialisation OpenRouter
 client = OpenAI(
     base_url="https://openrouter.ai/api/v1",
     api_key=os.getenv("OPENROUTER_API_KEY")
 )
 
-# Chargement des connaissances
-try:
-    with open("base_connaissances.txt", "r", encoding="utf-8") as f:
-        connaissances = f.read()
-except FileNotFoundError:
-    st.error("⚠️ Fichier base_connaissances.txt introuvable.")
-    connaissances = ""
+# Chargement base de connaissances
+def charger_connaissances():
+    try:
+        with open("base_connaissances.txt", "r", encoding="utf-8") as f:
+            return f.read()
+    except FileNotFoundError:
+        st.error("⚠️ base_connaissances.txt introuvable.")
+        return ""
 
-# Initialisation de l'historique
+connaissances = charger_connaissances()
+
+# Assistant tarifaire
+st.markdown("## 💰 Assistant tarifaire 2025")
+
+puissances = ["3", "6", "9", "12", "15", "18", "24", "30", "36"]
+options = ["Base", "Heures Pleines / Heures Creuses", "Tempo"]
+
+tarifs = {
+    "Base": {
+        "3": "103,20 €",
+        "6": "134,16 €",
+        "9": "167,88 €",
+        "12": "202,08 €",
+        "15": "233,76 €",
+        "18": "263,52 €",
+        "24": "319,08 €",
+        "30": "373,32 €",
+        "36": "426,24 €"
+    },
+    "Heures Pleines / Heures Creuses": {
+        "3": "137,76 €",
+        "6": "172,80 €",
+        "9": "206,76 €",
+        "12": "238,44 €",
+        "15": "270,12 €",
+        "18": "303,60 €",
+        "24": "365,28 €",
+        "30": "420,84 €",
+        "36": "477,00 €"
+    },
+    "Tempo": {
+        "3": "169,92 €",
+        "6": "203,28 €",
+        "9": "233,76 €",
+        "12": "264,36 €",
+        "15": "297,72 €",
+        "18": "329,40 €",
+        "24": "390,00 €",
+        "30": "444,24 €",
+        "36": "502,80 €"
+    }
+}
+
+col1, col2 = st.columns(2)
+with col1:
+    p = st.selectbox("Puissance souscrite (kVA)", puissances, index=1)
+with col2:
+    o = st.selectbox("Option tarifaire", options)
+
+if p and o:
+    st.success(f"💡 Abonnement annuel pour {p} kVA en option {o} : **{tarifs[o][p]} HT/an**")
+
+# Question/Réponse Franciscus
+st.markdown("## 💬 Une autre question ?")
+
 if "historique" not in st.session_state:
     st.session_state.historique = []
 
-# Réinitialisation
 if st.button("🔄 Réinitialiser l'historique"):
     st.session_state.historique = []
 
-# Affichage de l'historique
 with st.expander("📜 Historique des questions posées"):
     if st.session_state.historique:
         for i, q in enumerate(st.session_state.historique, 1):
@@ -52,24 +97,16 @@ with st.expander("📜 Historique des questions posées"):
     else:
         st.info("Aucune question posée pour le moment.")
 
-# Champ de question
 question = st.text_input("❓ Posez votre question ici :")
 
-# Traitement
 if question:
     with st.spinner("Franciscus rédige sa réponse..."):
         try:
             response = client.chat.completions.create(
                 model="openai/gpt-3.5-turbo",
                 messages=[
-                    {
-                        "role": "system",
-                        "content": f"Tu es Franciscus, un assistant client pour la SICAE. Tu réponds de manière claire, concise et accessible en t'appuyant sur les informations suivantes : {connaissances}"
-                    },
-                    {
-                        "role": "user",
-                        "content": question
-                    }
+                    {"role": "system", "content": f"Tu es Franciscus, un assistant client pour la SICAE. Tu réponds de manière claire, concise et accessible en t'appuyant sur les informations suivantes : {connaissances}"},
+                    {"role": "user", "content": question}
                 ],
                 temperature=0.4,
                 max_tokens=500

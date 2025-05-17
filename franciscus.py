@@ -13,11 +13,12 @@ st.markdown("""
 # 🤖 Franciscus
 Bienvenue ! Je suis **Franciscus**, l'assistant virtuel de la SICAE de la Somme et du Cambraisis.
 Je réponds à vos questions en recherchant, à votre place, les informations sur notre site.
-Je peux vous renseinger sur un grand nombre de sujets :
+Je peux vous renseigner sur un grand nombre de sujets :
 - Souscription / Résiliation
 - Facture ou Paiement
 - Coupures, travaux, raccordement
 - Conditions Générales de Vente
+et bien plus encore !
 """)
 
 # Initialisation OpenRouter

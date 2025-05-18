@@ -8,13 +8,13 @@ st.set_page_config(page_title="Franciscus", page_icon="⚡")
 st.image("franciscus.png", width=180)
 
 st.markdown("""
-# 🤖 Franciscus – Assistant IA SICAE
+# 🤖 Franciscus – Assistant IA de la SICAE - Version béta
 
-Posez vos questions sur :
+Posez moi vos questions sur :
 - 🔧 Technique Gaz (sécurité, branchement, consignation…)
 - 📄 Clientèle (contrat, facture, délais, souscription…)
 
-Franciscus choisit automatiquement la bonne base documentaire.
+Franciscus choisit automatiquement la bonne base documentaire et vous l'indique.
 """)
 
 # Détection intelligente de la base

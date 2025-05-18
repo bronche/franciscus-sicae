@@ -14,10 +14,10 @@ Posez vos questions sur :
 - 🔧 Technique Gaz (sécurité, branchement, consignation…)
 - 📄 Clientèle (contrat, facture, délais, souscription…)
 
-Franciscus choisira automatiquement la bonne base documentaire.
+Franciscus choisit automatiquement la bonne base documentaire.
 """)
 
-# Détecter la base à utiliser automatiquement
+# Détection intelligente de la base
 def identifier_base(question):
     mots_cles_gaz = [
         "gaz", "branchement", "intervention", "consignation", "poste", "odorisation",
@@ -28,7 +28,7 @@ def identifier_base(question):
         return "base_connaissances_gaz.txt"
     return "base_connaissances_client.txt"
 
-# Charger la base
+# Chargement du contenu
 def charger_connaissances(fichier):
     try:
         with open(fichier, "r", encoding="utf-8") as f:
@@ -43,7 +43,7 @@ if question:
     base_file = identifier_base(question)
     connaissances = charger_connaissances(base_file)
 
-    with st.spinner("✍️ Franciscus rédige sa réponse..."):
+    with st.spinner(f"📚 Recherche dans la base {'Gaz' if 'gaz' in base_file else 'Client'}..."):
         try:
             client = OpenAI(base_url="https://openrouter.ai/api/v1", api_key=os.getenv("OPENROUTER_API_KEY"))
             response = client.chat.completions.create(

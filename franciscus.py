@@ -8,7 +8,7 @@ import os
 # ──────────────────────────────
 st.set_page_config(page_title="Franciscus", page_icon="⚡")
 st.image("franciscus.png", width=180)
-st.image("franciscus.png", width=180)
+st.image("qr_franciscus.png", width=180)
 st.markdown(
     """
 # 🤖 Franciscus – Assistant IA SICAE
